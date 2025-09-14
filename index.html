@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Goal Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .goal-card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .goal-header {
+            padding: 15px;
+            color: white;
+        }
+        .weight-goal {
+            background: linear-gradient(to right, #3a7bd5, #3a6073);
+        }
+        .cardio-goal {
+            background: linear-gradient(to right, #ff4e50, #f9d423);
+        }
+        .nutrition-goal {
+            background: linear-gradient(to right, #56ab2f, #a8e063);
+        }
+        .completed-goal {
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+        }
+        .progress-container {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: width 0.5s ease-in-out;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .stats-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Fitness Goal Tracker</h1>
+        
+        <!-- Alert Container -->
+        <div id="alert-container"></div>
+        
+        <!-- Stats Row -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="stats-card">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="stats-value" id="total-goals">0</div>
+                            <div class="stats-label">Total Goals</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-value" id="completed-goals">0</div>
+                            <div class="stats-label">Completed</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-value" id="in-progress-goals">0</div>
+                            <div class="stats-label">In Progress</div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-value" id="completion-rate">0%</div>
+                            <div class="stats-label">Completion Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add Goal Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Add New Goal</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="add-goal-form">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="goal_type" class="form-label">Goal Type</label>
+                                    <select class="form-select" id="goal_type" name="goal_type" required>
+                                        <option value="weight">Weight Goal (kg)</option>
+                                        <option value="steps">Steps Goal</option>
+                                        <option value="calories">Calories Goal</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="target_value" class="form-label">Target Value</label>
+                                    <input type="number" step="0.01" class="form-control" id="target_value" name="target_value" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="deadline" class="form-label">Deadline</label>
+                                    <input type="date" class="form-control" id="deadline" name="deadline" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary mt-3">Add Goal</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Current Progress Section -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">Update Progress</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="update-progress-form">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="goal_select" class="form-label">Select Goal</label>
+                                    <select class="form-select" id="goal_select" name="goal_select" required>
+                                        <option value="">Select a goal</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="current_value" class="form-label">Current Value</label>
+                                    <input type="number" step="0.01" class="form-control" id="current_value" name="current_value" required>
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-success w-100">Update</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Goals Container -->
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <h2>Your Goals</h2>
+                <div class="btn-group mb-3" role="group">
+                    <button type="button" class="btn btn-outline-primary active" id="filter-all">All</button>
+                    <button type="button" class="btn btn-outline-primary" id="filter-active">Active</button>
+                    <button type="button" class="btn btn-outline-primary" id="filter-completed">Completed</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" id="goals-container">
+            <!-- Goals will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Goal class
+        class Goal {
+            constructor(id, type, targetValue, deadline) {
+                this.id = id;
+                this.type = type;
+                this.targetValue = parseFloat(targetValue);
+                this.deadline = deadline;
+                this.currentValue = 0;
+                this.dateCreated = new Date().toISOString();
+                this.isCompleted = false;
+                this.progress = 0;
+            }
+
+            updateProgress(currentValue) {
+                this.currentValue = parseFloat(currentValue);
+                
+                // Calculate progress
+                if (this.type === 'weight') {
+                    // For weight goals, progress is how close current is to target
+                    // (we're assuming weight loss here)
+                    const initialWeight = 80; // This should be set dynamically in a real app
+                    const totalToLose = initialWeight - this.targetValue;
+                    const lost = initialWeight - this.currentValue;
+                    this.progress = Math.min(100, Math.max(0, (lost / totalToLose) * 100));
+                } else {
+                    // For other goals (steps, calories), progress is percentage of target
+                    this.progress = Math.min(100, (this.currentValue / this.targetValue) * 100);
+                }
+                
+                // Check if goal is completed
+                if (this.progress >= 100) {
+                    this.isCompleted = true;
+                }
+                
+                return this.progress;
+            }
+
+            getRemainingDays() {
+                const today = new Date();
+                const deadlineDate = new Date(this.deadline);
+                const differenceInTime = deadlineDate.getTime() - today.getTime();
+                return Math.max(0, Math.ceil(differenceInTime / (1000 * 3600 * 24)));
+            }
+
+            getProgressColor() {
+                if (this.isCompleted) return '#4ca1af';
+                if (this.progress < 30) return '#ff4e50';
+                if (this.progress < 70) return '#f9d423';
+                return '#56ab2f';
+            }
+
+            getTypeClass() {
+                switch (this.type) {
+                    case 'weight': return 'weight-goal';
+                    case 'steps': return 'cardio-goal';
+                    case 'calories': return 'nutrition-goal';
+                    default: return '';
+                }
+            }
+
+            getTypeIcon() {
+                switch (this.type) {
+                    case 'weight': return 'fa-weight-scale';
+                    case 'steps': return 'fa-person-walking';
+                    case 'calories': return 'fa-fire';
+                    default: return 'fa-trophy';
+                }
+            }
+
+            getTypeLabel() {
+                switch (this.type) {
+                    case 'weight': return 'Weight Goal';
+                    case 'steps': return 'Steps Goal';
+                    case 'calories': return 'Calories Goal';
+                    default: return 'Goal';
+                }
+            }
+
+            getUnitLabel() {
+                switch (this.type) {
+                    case 'weight': return 'kg';
+                    case 'steps': return 'steps';
+                    case 'calories': return 'calories';
+                    default: return '';
+                }
+            }
+        }
+
+        // GoalManager class
+        class GoalManager {
+            constructor() {
+                this.goals = [];
+                this.loadGoals();
+                this.initEventListeners();
+                this.updateStats();
+                this.currentFilter = 'all';
+            }
+
+            loadGoals() {
+                const savedGoals = localStorage.getItem('fitness_goals');
+                if (savedGoals) {
+                    this.goals = JSON.parse(savedGoals);
+                    this.renderGoals();
+                    this.populateGoalSelect();
+                }
+            }
+
+            saveGoals() {
+                localStorage.setItem('fitness_goals', JSON.stringify(this.goals));
+                this.updateStats();
+            }
+
+            addGoal(type, targetValue, deadline) {
+                const id = Date.now().toString();
+                const goal = new Goal(id, type, targetValue, deadline);
+                this.goals.push(goal);
+                this.saveGoals();
+                this.renderGoals();
+                this.populateGoalSelect();
+                this.showAlert('Goal added successfully!', 'success');
+                return goal;
+            }
+
+            updateGoalProgress(goalId, currentValue) {
+                const goal = this.goals.find(g => g.id === goalId);
+                if (goal) {
+                    goal.updateProgress(currentValue);
+                    this.saveGoals();
+                    this.renderGoals();
+                    this.showAlert('Progress updated!', 'success');
+                    return goal;
+                }
+                return null;
+            }
+
+            deleteGoal(goalId) {
+                this.goals = this.goals.filter(g => g.id !== goalId);
+                this.saveGoals();
+                this.renderGoals();
+                this.populateGoalSelect();
+                this.showAlert('Goal deleted successfully!', 'info');
+            }
+
+            completeGoal(goalId) {
+                const goal = this.goals.find(g => g.id === goalId);
+                if (goal) {
+                    goal.isCompleted = true;
+                    goal.progress = 100;
+                    this.saveGoals();
+                    this.renderGoals();
+                    this.showAlert('Goal marked as completed!', 'success');
+                }
+            }
+
+            filterGoals(filter) {
+                this.currentFilter = filter;
+                this.renderGoals();
+            }
+
+            getFilteredGoals() {
+                switch (this.currentFilter) {
+                    case 'active':
+                        return this.goals.filter(g => !g.isCompleted);
+                    case 'completed':
+                        return this.goals.filter(g => g.isCompleted);
+                    default:
+                        return this.goals;
+                }
+            }
+
+            renderGoals() {
+                const container = document.getElementById('goals-container');
+                container.innerHTML = '';
+                
+                const filteredGoals = this.getFilteredGoals();
+                
+                if (filteredGoals.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-clipboard-list fa-3x mb-3 text-muted"></i>
+                            <h4 class="text-muted">No goals found</h4>
+                            <p class="text-muted">Add your first fitness goal to get started!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                filteredGoals.forEach(goal => {
+                    const headerClass = goal.isCompleted ? 'completed-goal' : goal.getTypeClass();
+                    const remainingDays = goal.getRemainingDays();
+                    const deadlineText = goal.isCompleted 
+                        ? 'Completed!' 
+                        : (remainingDays > 0 ? `${remainingDays} days left` : 'Deadline passed');
+                    const deadlineClass = goal.isCompleted 
+                        ? 'text-success' 
+                        : (remainingDays > 0 ? 'text-primary' : 'text-danger');
+
+                    const goalCard = document.createElement('div');
+                    goalCard.className = 'col-md-4';
+                    goalCard.innerHTML = `
+                        <div class="goal-card">
+                            <div class="goal-header ${headerClass}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        <i class="fas ${goal.getTypeIcon()} me-2"></i>
+                                        ${goal.getTypeLabel()}
+                                    </h5>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm text-white" type="button" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            ${!goal.isCompleted ? `<li><button class="dropdown-item complete-goal" data-id="${goal.id}">Mark as Completed</button></li>` : ''}
+                                            <li><button class="dropdown-item delete-goal" data-id="${goal.id}">Delete</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <small class="text-muted">Target</small>
+                                    <h4>${goal.targetValue} ${goal.getUnitLabel()}</h4>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <small class="text-muted">Progress (${Math.round(goal.progress)}%)</small>
+                                        <small class="fw-bold">${goal.currentValue} / ${goal.targetValue} ${goal.getUnitLabel()}</small>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar" style="width: ${goal.progress}%; background-color: ${goal.getProgressColor()};"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">
+                                        <i class="far fa-calendar-alt me-1"></i>
+                                        ${new Date(goal.deadline).toLocaleDateString()}
+                                    </small>
+                                    <small class="${deadlineClass}">
+                                        <i class="far fa-clock me-1"></i>
+                                        ${deadlineText}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(goalCard);
+                });
+
+                // Add event listeners to buttons
+                document.querySelectorAll('.delete-goal').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const goalId = e.target.getAttribute('data-id');
+                        this.deleteGoal(goalId);
+                    });
+                });
+
+                document.querySelectorAll('.complete-goal').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const goalId = e.target.getAttribute('data-id');
+                        this.completeGoal(goalId);
+                    });
+                });
+            }
+
+            populateGoalSelect() {
+                const select = document.getElementById('goal_select');
+                select.innerHTML = '<option value="">Select a goal</option>';
+                
+                // Only show active goals in the dropdown
+                const activeGoals = this.goals.filter(g => !g.isCompleted);
+                
+                activeGoals.forEach(goal => {
+                    const option = document.createElement('option');
+                    option.value = goal.id;
+                    option.textContent = `${goal.getTypeLabel()} - ${goal.targetValue} ${goal.getUnitLabel()}`;
+                    select.appendChild(option);
+                });
+            }
+
+            updateStats() {
+                const totalGoals = this.goals.length;
+                const completedGoals = this.goals.filter(g => g.isCompleted).length;
+                const inProgressGoals = totalGoals - completedGoals;
+                const completionRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
+
+                document.getElementById('total-goals').textContent = totalGoals;
+                document.getElementById('completed-goals').textContent = completedGoals;
+                document.getElementById('in-progress-goals').textContent = inProgressGoals;
+                document.getElementById('completion-rate').textContent = `${completionRate}%`;
+            }
+
+            showAlert(message, type = 'info') {
+                const alertContainer = document.getElementById('alert-container');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                alertContainer.appendChild(alert);
+                
+                // Auto dismiss after 3 seconds
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 150);
+                }, 3000);
+            }
+
+            initEventListeners() {
+                // Add Goal Form
+                document.getElementById('add-goal-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const type = document.getElementById('goal_type').value;
+                    const targetValue = document.getElementById('target_value').value;
+                    const deadline = document.getElementById('deadline').value;
+                    
+                    if (!type || !targetValue || !deadline) {
+                        this.showAlert('Please fill all required fields', 'danger');
+                        return;
+                    }
+                    
+                    this.addGoal(type, targetValue, deadline);
+                    e.target.reset();
+                });
+
+                // Update Progress Form
+                document.getElementById('update-progress-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const goalId = document.getElementById('goal_select').value;
+                    const currentValue = document.getElementById('current_value').value;
+                    
+                    if (!goalId || !currentValue) {
+                        this.showAlert('Please select a goal and enter the current value', 'danger');
+                        return;
+                    }
+                    
+                    this.updateGoalProgress(goalId, currentValue);
+                    document.getElementById('current_value').value = '';
+                });
+
+                // Filter buttons
+                document.getElementById('filter-all').addEventListener('click', () => {
+                    this.setActiveFilter('all');
+                    this.filterGoals('all');
+                });
+                
+                document.getElementById('filter-active').addEventListener('click', () => {
+                    this.setActiveFilter('active');
+                    this.filterGoals('active');
+                });
+                
+                document.getElementById('filter-completed').addEventListener('click', () => {
+                    this.setActiveFilter('completed');
+                    this.filterGoals('completed');
+                });
+            }
+
+            setActiveFilter(filter) {
+                document.querySelectorAll('#filter-all, #filter-active, #filter-completed').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.getElementById(`filter-${filter}`).classList.add('active');
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            const goalManager = new GoalManager();
+        });
+    </script>
+</body>
+</html>

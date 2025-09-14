@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Reference - FitTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+        
+        .doctor-card {
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .doctor-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .doctor-img {
+            height: 200px;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        
+        .doctor-info {
+            padding: 15px;
+        }
+        
+        .doctor-specialty {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .time-slot {
+            padding: 5px 10px;
+            margin: 2px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .time-slot:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .filter-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .appointment-btn {
+            background-color: var(--secondary-color);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .appointment-btn:hover {
+            background-color: #169e70;
+            transform: scale(1.05);
+        }
+        
+        .search-bar {
+            position: relative;
+        }
+        
+        .search-bar i {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: #6c757d;
+        }
+        
+        .search-input {
+            padding-left: 40px;
+            border-radius: 20px;
+        }
+        
+        .available-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">FitTrack</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Workouts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Nutrition</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Medical</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Progress</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="#" class="btn btn-outline-light me-2">
+                        <i class="fas fa-bell"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-light">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1>Doctor Reference</h1>
+                    <p>Find and schedule appointments with medical professionals.</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control search-input" placeholder="Search doctors by name or specialty...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Specialty</label>
+                    <select class="form-select">
+                        <option value="" selected>All Specialties</option>
+                        <option value="cardiology">Cardiology</option>
+                        <option value="sports-med">Sports Medicine</option>
+                        <option value="nutrition">Nutrition</option>
+                        <option value="orthopedics">Orthopedics</option>
+                        <option value="physio">Physiotherapy</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Availability</label>
+                    <select class="form-select">
+                        <option value="" selected>Any Availability</option>
+                        <option value="today">Today</option>
+                        <option value="this-week">This Week</option>
+                        <option value="next-week">Next Week</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Rating</label>
+                    <select class="form-select">
+                        <option value="" selected>Any Rating</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="4.5">4.5+ Stars</option>
+                    </select>
+                </div>
+            </div>
+            <div class="text-end mt-2">
+                <button class="btn btn-primary">Apply Filters</button>
+                <button class="btn btn-outline-secondary ms-2">Reset</button>
+            </div>
+        </div>
+
+        <!-- Doctors Listing -->
+        <div class="row">
+            <!-- Doctor 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="doctor-card bg-white">
+                    <div class="doctor-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_VqtIKoN7TKT3PD4ziYEGXOphz8teVKsASw&s');">
+                    </div>
+                    <div class="doctor-info">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Dr. Sarah Johnson</h5>
+                            <span class="available-badge">Available Today</span>
+                        </div>
+                        <p class="doctor-specialty mb-2">Sports Medicine</p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                            <span class="ms-1">4.5 (124 reviews)</span>
+                        </div>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-danger"></i>123 Fitness Ave, Mumbai, MH 400001</p>
+                        <p class="mb-3"><i class="fas fa-phone me-2 text-primary"></i>(022) 555-1234</p>
+                        
+                        <div class="mb-3">
+                            <p class="fw-bold mb-2">Available Appointments:</p>
+                            <div class="d-flex flex-wrap">
+                                <span class="time-slot">Today, 2:00 PM</span>
+                                <span class="time-slot">Today, 3:30 PM</span>
+                                <span class="time-slot">Tomorrow, 9:00 AM</span>
+                                <span class="time-slot">Tomorrow, 11:30 AM</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn appointment-btn w-100">Book Appointment</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="doctor-card bg-white">
+                    <div class="doctor-img" style="background-image: url('https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small_2x/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg');">
+                    </div>
+                    <div class="doctor-info">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Dr. Michael Chen</h5>
+                            <span class="available-badge">Available Tomorrow</span>
+                        </div>
+                        <p class="doctor-specialty mb-2">Nutrition Specialist</p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <span class="ms-1">5.0 (87 reviews)</span>
+                        </div>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-danger"></i>456 Wellness Blvd, Delhi, DL 110002</p>
+                        <p class="mb-3"><i class="fas fa-phone me-2 text-primary"></i>(011) 555-5678</p>
+                        
+                        <div class="mb-3">
+                            <p class="fw-bold mb-2">Available Appointments:</p>
+                            <div class="d-flex flex-wrap">
+                                <span class="time-slot">Tomorrow, 10:00 AM</span>
+                                <span class="time-slot">Tomorrow, 1:30 PM</span>
+                                <span class="time-slot">Friday, 11:00 AM</span>
+                                <span class="time-slot">Friday, 4:30 PM</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn appointment-btn w-100">Book Appointment</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="doctor-card bg-white">
+                    <div class="doctor-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvuFBZt4646af_VJHO_V_5drHHeJZT8FT98A&s');">
+                    </div>
+                    <div class="doctor-info">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Dr. Rachel Torres</h5>
+                        </div>
+                        <p class="doctor-specialty mb-2">Physical Therapist</p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="far fa-star text-warning"></i>
+                            <span class="ms-1">4.0 (156 reviews)</span>
+                        </div>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-danger"></i>789 Recovery St, Bangalore, KA 560003</p>
+                        <p class="mb-3"><i class="fas fa-phone me-2 text-primary"></i>(080) 555-9012</p>
+                        
+                        <div class="mb-3">
+                            <p class="fw-bold mb-2">Available Appointments:</p>
+                            <div class="d-flex flex-wrap">
+                                <span class="time-slot">Monday, 9:00 AM</span>
+                                <span class="time-slot">Monday, 2:30 PM</span>
+                                <span class="time-slot">Tuesday, 10:00 AM</span>
+                                <span class="time-slot">Tuesday, 3:30 PM</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn appointment-btn w-100">Book Appointment</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor 4 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="doctor-card bg-white">
+                    <div class="doctor-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw6V6bLD5eekepuQ2W-w6pGpCbV9njJjpD_w&s');">
+                    </div>
+                    <div class="doctor-info">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Dr. James Wilson</h5>
+                            <span class="available-badge">Available Today</span>
+                        </div>
+                        <p class="doctor-specialty mb-2">Cardiologist</p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                            <span class="ms-1">4.7 (203 reviews)</span>
+                        </div>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-danger"></i>321 Heart Healthy Lane, Chennai, TN 600004</p>
+                        <p class="mb-3"><i class="fas fa-phone me-2 text-primary"></i>(044) 555-3456</p>
+                        
+                        <div class="mb-3">
+                            <p class="fw-bold mb-2">Available Appointments:</p>
+                            <div class="d-flex flex-wrap">
+                                <span class="time-slot">Today, 4:00 PM</span>
+                                <span class="time-slot">Tomorrow, 9:30 AM</span>
+                                <span class="time-slot">Wednesday, 1:00 PM</span>
+                                <span class="time-slot">Wednesday, 3:30 PM</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn appointment-btn w-100">Book Appointment</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor 5 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="doctor-card bg-white">
+                    <div class="doctor-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtJ3_QRODTp8aNqyvrOJh5IHPhsG93ScVSsg&s');">
+                    </div>
+                    <div class="doctor-info">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Dr. Olivia Garcia</h5>
+                        </div>
+                        <p class="doctor-specialty mb-2">Orthopedic Specialist</p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="far fa-star text-warning"></i>
+                            <span class="ms-1">4.2 (118 reviews)</span>
+                        </div>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-danger"></i>567 Joint Care Circle, Hyderabad, TS 500005</p>
+                        <p class="mb-3"><i class="fas fa-phone me-2 text-primary"></i>(040) 555-7890</p>
+                        
+                        <div class="mb-3">
+                            <p class="fw-bold mb-2">Available Appointments:</p>
+                            <div class="d-flex flex-wrap">
+                                <span class="time-slot">Friday, 8:30 AM</span>
+                                <span class="time-slot">Friday, 1:00 PM</span>
+                                <span class="time-slot">Monday, 10:30 AM</span>
+                                <span class="time-slot">Monday, 2:00 PM</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn appointment-btn w-100">Book Appointment</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Doctor 6 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="doctor-card bg-white">
+                    <div class="doctor-img" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLvgdqgB0TcR0xzaX9nd8j-Uw5jqxumL6CnA&s');">
+                    </div>
+                    <div class="doctor-info">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Dr. David Kim</h5>
+                            <span class="available-badge">Available Today</span>
+                        </div>
+                        <p class="doctor-specialty mb-2">Sports Psychologist</p>
+                        <div class="mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <span class="ms-1">4.9 (76 reviews)</span>
+                        </div>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2 text-danger"></i>890 Mental Health Plaza, Pune, MH 411006</p>
+                        <p class="mb-3"><i class="fas fa-phone me-2 text-primary"></i>(020) 555-1290</p>
+                        
+                        <div class="mb-3">
+                            <p class="fw-bold mb-2">Available Appointments:</p>
+                            <div class="d-flex flex-wrap">
+                                <span class="time-slot">Today, 12:00 PM</span>
+                                <span class="time-slot">Today, 5:30 PM</span>
+                                <span class="time-slot">Thursday, 9:00 AM</span>
+                                <span class="time-slot">Thursday, 4:30 PM</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn appointment-btn w-100">Book Appointment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple script to handle time slot selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const timeSlots = document.querySelectorAll('.time-slot');
+            
+            timeSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    // First remove selected class from all slots
+                    timeSlots.forEach(s => s.classList.remove('bg-primary', 'text-white'));
+                    
+                    // Add selected class to clicked slot
+                    this.classList.add('bg-primary', 'text-white');
+                });
+            });
+            
+            // Simple filter functionality
+            const searchInput = document.querySelector('.search-input');
+            const doctorCards = document.querySelectorAll('.doctor-card');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                doctorCards.forEach(card => {
+                    const doctorName = card.querySelector('h5').textContent.toLowerCase();
+                    const doctorSpecialty = card.querySelector('.doctor-specialty').textContent.toLowerCase();
+                    
+                    if (doctorName.includes(searchTerm) || doctorSpecialty.includes(searchTerm)) {
+                        card.parentElement.style.display = 'block';
+                    } else {
+                        card.parentElement.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Appointment booking functionality
+            const appointmentBtns = document.querySelectorAll('.appointment-btn');
+            
+            appointmentBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const doctorCard = this.closest('.doctor-card');
+                    const doctorName = doctorCard.querySelector('h5').textContent;
+                    const selectedTimeSlot = doctorCard.querySelector('.time-slot.bg-primary')?.textContent || 'No time selected';
+                    
+                    if (!doctorCard.querySelector('.time-slot.bg-primary')) {
+                        alert('Please select an appointment time first.');
+                        return;
+                    }
+                    
+                    alert(`Appointment request sent for ${doctorName} at ${selectedTimeSlot}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
